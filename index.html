@@ -1,1 +1,426 @@
-Yo
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <meta charset="utf-8">
+  <title>Public transport in Warsaw - visualized</title>
+  <style>
+  #map {
+    height: 100%;
+  }
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .outer {
+    z-index: 10;
+    display: table;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+  }
+
+  .middle {
+    display: table-cell;
+    vertical-align: middle;
+  }
+
+  .inner {
+    margin-left: auto;
+    margin-right: auto; 
+    width: 35%;
+    background-color: #fff;
+    padding: 5px;
+    border: 1px solid #999;
+    /*text-align: center;*/
+    font-family: 'Roboto','sans-serif';
+    
+  }
+
+  .floating-panel {
+    position: absolute;
+    z-index: 5;
+    background-color: #fff;
+    padding: 5px;
+    border: 1px solid #999;
+    text-align: center;
+    font-family: 'Roboto','sans-serif';
+    line-height: 30px;
+    padding-left: 10px;
+    top: 40px;
+    left: 10px;
+  }
+
+</style>
+</head>
+<body>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+  <script src="https://www.w3schools.com/lib/w3color.js"></script>
+  <script src="wasm_client.js"></script>
+
+  <div class="outer" id="intro">
+    <div class="middle">
+      <div class="inner">
+        <h1>What do I see?</h1>
+        <p>A good transportation system changes how we percieve distance. With a bus or subway getting to a downtown, physically distant location may be faster than walking 2 km in a suburban area. This interactive map lets you explore this phenomenon on the example of <a href="https://en.wikipedia.org/wiki/Warsaw">Warsaw</a>.</p>
+        <h1>How do I see?</h1>
+        <p>Your departure location is marked with a red pin and for each bus, tram or subway stop in the city we calculate the time it takes to reach it from the pin. Each location is colored according to the time it takes to reach the nearest stop. This partitioning is known as the <a href="https://en.wikipedia.org/wiki/Voronoi_diagram">Voronoi diagram</a>. You can click any location in the city to put your pin at the nearest stop. When you hover a location, you will see a red line showing you the fastest route to/from that destination.</p>
+        <h1>Additional options</h1>
+        <p>In the top left corner of the screen you have additional options for the visualization.
+        <ol>
+          <li><b>Time</b> - the city looks different during the rush hours! You can also see how missing a rare suburban connection changes the picture.</li>
+          <li><b>Forward/backward mode</b> - by default see how long it takes to reach any destination from your pin, starting at the time you've picked. But you can also see how long it takes to do the reverse trip, and arrive at your pin <i>before</i> that time.</li>
+          <li><b>Threshold</b> - commute times above this value will appear in deep blue. Lower to see more details around your pin, increase to see the wider view.</li>
+          <li><b>Diagram opacity</b> - control how much of the city map you can see from behind the visualization.</li>
+          <li><b>Show introduction</b> - show this text :)</li>
+        </ol> 
+        </p>
+        <input type="button" id="hideIntroButton" value="Let's go!" onclick="document.getElementById('intro').style.display='none'" />
+
+      </div>
+    </div>
+  </div>
+
+  <div class="floating-panel" id="controls">
+    <div class="nested-panel" id="time-panel">
+      <input type="button" name="decrementMinute" id="decrementMinute" value="-" onclick="decrementMinute()" />
+      <input type="time" name="timeInput" id="timeInput" max="22:00" min="06:00" value="09:00"/>
+      <input type="button" name="incrementMinute" id="incrementMinute" value="+" onclick="incrementMinute()" />
+    </div>
+  
+    <select id="directionSelect" onchange="changeDirection()">
+      <option value="departure">Color by departure</option>
+      <option value="arrival">Color by arrival</option>
+    </select> 
+
+    <div class="nested-panel" id="threshold-choice">
+      Threshold: <span id="threshold-span">60</span> minutes<br>
+      <input type="range" name="thresholdSlider" id="thresholdSlider" value="60" min="10" max="150" onchange="setThreshold()">
+    </div>
+    <div class="nested-panel" id="opacity-choice">
+      Diagram opacity <span id="opacity-span">60</span>%<br>
+      <input type="range" name="opacitySlider" id="opacitySlider" value="60" min="0" max="100" onchange="setOpacity()"">
+    </div>
+
+    <input type="button" name="showIntroButton" id="showIntroButton" value="Show introduction" onclick="document.getElementById('intro').style.display='block'" />
+
+    </div>
+  </div>
+  <div id="map"></div>
+  <script>
+    'use strict';
+
+    var map = null;
+    var circles = null;
+    var currentStop = 5987;
+    var ZTMSchedule = null;
+    var colorTable = null;
+    var threshold = 60 * 60;
+    var forward = true;
+    var nodeLocations = null;
+    var visualization = null;
+    const originalMapCenter = {lat: 52.2507055, lng: 21.0250947};
+
+    class ArrowPath {
+      constructor(map, dijResults) {
+        this.dij = dijResults;
+        this.polyline = new google.maps.Polyline({
+          path: [],
+          strokeColor: '#FF0000',
+          strokeOpacity: 1.0,
+          strokeWeight: 2,
+          zIndex: 10,
+          map: map
+        });
+      }
+
+      updateDij(dijResults) {
+        this.dij = dijResults;
+        this.polyline.setPath([]);
+      }
+
+      traceTo(destId) {
+        if (this.dij[destId] == null) {
+          this.polyline.setPath([]);
+          return;
+        };
+
+        var from = this.dij[destId].f;
+        var to   = this.dij[destId].t;
+
+        var path = [];
+        while (from !== to) {
+          const position = nodeLocations[to];
+          if (!Visualization.isPosInAfrica(position)) {
+            path.push(position);
+          };
+
+          to   = this.dij[from].t;
+          from = this.dij[from].f;
+        };
+        path.push(nodeLocations[to]);
+        this.polyline.setPath(path);
+      }
+    }
+
+    class Visualization {
+      static isPosInAfrica(pos) {
+        if (isNaN(pos.lat) || isNaN(pos.lng)) { return true; };
+        return (Math.abs(pos.lat - originalMapCenter.lat) > 1. ||
+                Math.abs(pos.lng - originalMapCenter.lng) > 1.);
+      }
+
+      static defaultFillColor() {
+        return '#FFFFFF';
+      }
+
+      static defaultStrokeColor() {
+        return '#000000';
+      }
+
+      constructor(map, voronoi) {
+        this.map = map;
+
+        this.pin = new google.maps.Marker({
+          map: map,
+          clickable: false,
+          position: nodeLocations[currentStop]
+        });
+
+        this.arrowPath = null;
+
+        this.polygons = [];
+
+        for (var i = 0; i < voronoi.simplexes.length; i++) {
+          if (voronoi.simplexes[i].length < 3) {
+            this.polygons.push(null);
+            continue;
+          };
+
+          const paths = voronoi.simplexes[i].map(id => voronoi.nodes[id]);
+          const polygon = new google.maps.Polygon({
+              paths: paths,
+              strokeColor: Visualization.defaultStrokeColor(),
+              fillColor: Visualization.defaultFillColor(),
+              fillOpacity: 0.60,
+              strokeOpacity: 0.5,
+              strokeWeight: 0.2
+          });
+
+          polygon.setMap(map);
+
+          polygon.addListener('click', ((id, pin) => {
+            return () => {
+              currentStop = id;
+              console.log('setting currentStop to', id);
+              pin.setOptions({
+                position: nodeLocations[id]
+              });
+              loadDijkstra(this);
+            };
+          })(i, this.pin));
+
+          polygon.addListener('mouseover', ((id, vis) => {
+            return () => {
+              console.log('hovering over', id);
+              if (vis.arrowPath != null) {
+                vis.arrowPath.traceTo(id);
+              }
+            };
+          })(i, this));
+
+          this.polygons.push(polygon);
+        };
+      }
+
+      visualize(dijResults) {
+        if (this.arrowPath == null) {
+          this.arrowPath = new ArrowPath(this.map, dijResults)
+        } else {
+          this.arrowPath.updateDij(dijResults);
+        };  
+
+        const overThreshold = colorTable[colorTable.length-1];
+        function hexIt(time) {
+          if (time > threshold) { return overThreshold; };
+          const percentage = Math.round((colorTable.length - 1) * time / threshold);
+          return colorTable[percentage];
+        };
+
+        this.polygons.forEach((polygon, i) => {
+          const state = dijResults[i];
+          if (state == null || polygon == null) { return; };
+
+          polygon.setOptions({
+            fillColor: hexIt(state.s)
+          });
+        });
+      }
+
+      hideFromView() {
+        this.polygons.forEach((polygon, _) => {
+          if (polygon != null) {
+            polygon.setMap(null);
+          };
+        });
+
+        this.pin.setMap(null);
+      }
+
+      setOpacity(opacity) {
+        this.polygons.forEach((polygon, _) => {
+          if (polygon != null) {
+            polygon.setOptions({
+              fillOpacity: opacity
+            });
+          }
+        })
+      }
+    }
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 12,
+        center: originalMapCenter,
+        mapTypeId: 'terrain'
+      });
+
+      Promise.all([
+        makeRequest('GET',
+                    'https://jatentaki.github.io/package.sz',
+                    {responseType: 'arraybuffer'}),
+        
+        Rust.wasm_client,
+      ])
+      .then(values => {
+        colorTable = createColorLookupTable();
+
+        const pack = new Uint8Array(values[0]);
+        const client = values[1];
+
+        console.log('Initializing schedule');
+        var voronoi = client.initPackage(pack);
+        console.log('Schedule initialized', voronoi);
+
+        ZTMSchedule = client;
+
+        return voronoi;
+      })
+      .then(voronoi => {
+        nodeLocations = ZTMSchedule.getNodes();
+        visualization = new Visualization(map, voronoi);
+        loadDijkstra(visualization);
+      });
+    }
+
+    function makeRequest (method, url, options) {
+      return new Promise(function (resolve, reject) {
+        var xhr = new XMLHttpRequest();
+
+        if (options !== undefined) {
+          for (var key in options) {
+            xhr[key] = options[key];
+          };
+
+          if (options.headers !== undefined) {
+            for (var key in options.headers) {
+              xhr.setRequestHeader(key, options.headers[key]);
+            };
+          };
+        };
+
+        xhr.open(method, url);
+        xhr.onload = function () {
+          if (this.status >= 200 && this.status < 300) {
+            resolve(xhr.response);
+          } else {
+            reject({
+              status: this.status,
+              statusText: xhr.statusText
+            });
+          }
+        };
+        xhr.onerror = function () {
+          reject({
+            status: this.status,
+            statusText: xhr.statusText
+          });
+        };
+        xhr.send();
+      });
+    };
+
+    function createColorLookupTable() {
+      var colorTable = [];
+      for (var i = 0; i < 100; i++) {
+        var code = new w3color(d3.interpolateRdYlBu(i / 100)).toHexString();
+        colorTable.push(code); 
+      };
+
+      return colorTable;
+    }
+
+    function loadDijkstra(vis) {
+      var m = getTime().minute;
+      var h = getTime().hour;
+
+      if (currentStop == null) {
+        return;
+      };
+
+      var dijkstraResults = ZTMSchedule.dijkstraPath(currentStop, h, m, forward);
+      vis.visualize(dijkstraResults);
+    }
+
+    function incrementMinute() {
+      document.getElementById('timeInput').stepUp();
+      loadDijkstra(visualization);
+    }
+
+    function decrementMinute() {
+      document.getElementById('timeInput').stepDown();
+      loadDijkstra(visualization);
+    }
+
+    function changeDirection() {
+      const option = document.getElementById('directionSelect').selectedIndex;
+
+      if (option == 0) {
+        forward = true;
+      } else {
+        forward = false;
+      };
+
+      loadDijkstra(visualization);
+    }
+
+    function setThreshold() {
+      threshold = document.getElementById('thresholdSlider').value * 60;
+      document.getElementById('threshold-span').textContent = (threshold / 60).toString();
+      loadDijkstra(visualization);
+    }
+
+    function setOpacity() {
+      const opacityPercent = document.getElementById('opacitySlider').value;
+      visualization.setOpacity(opacityPercent / 100);
+      document.getElementById('opacity-span').textContent = opacityPercent.toString();
+    }
+
+
+    function getTime() {
+      const timeSetter = document.getElementById("timeInput");
+      const splits = timeSetter.value.split(':');
+
+      return {
+        hour: parseInt(splits[0]),
+        minute: parseInt(splits[1])
+      };
+    }
+
+      </script>
+      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDwg8-aUcFQxquhk0KCmJnETUxo5MJSiJ4&callback=initMap"></script>
+    </body>
+    </html>
