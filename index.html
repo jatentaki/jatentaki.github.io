@@ -25,16 +25,14 @@
   .middle {
     display: table-cell;
     vertical-align: middle;
-    text-overflow: scroll;
   }
 
   .inner {
-    overflow-y: scroll;
     display: block;
     margin-left: auto;
     margin-right: auto; 
     width: 700px;
-    background-color: #fff;
+    background-color: rgba(255, 255, 255, 0.9);
     padding: 5px;
     border: 2px solid #999;
     font-family: 'Roboto','sans-serif';
@@ -82,7 +80,7 @@
         <h1>What do I see?</h1>
         <p>A good transportation system changes how we percieve distance. Getting to a downtown, physically distant location with a bus or subway may be faster than walking 2 km in a suburban area. This interactive map lets you explore this phenomenon on the example of <a target="_blank" href="https://en.wikipedia.org/wiki/Warsaw">Warsaw</a>.</p>
         <h1>How do I see?</h1>
-        <p>Your departure location is marked with a red pin and for each bus, tram or subway stop in the city we calculate the time it takes to reach it from the pin. The city is colored according to the time it takes to reach the nearest stop. This partitioning is known as the <a target="_blank" href="https://en.wikipedia.org/wiki/Voronoi_diagram">Voronoi diagram</a>.</p>
+        <p>Your departure location is marked with a red pin and for each bus, tram or subway stop in the city we calculate the time it takes to reach it from the pin. The city is colored according to the time it takes to reach the nearest stop. This partitioning is known as a <a target="_blank" href="https://en.wikipedia.org/wiki/Voronoi_diagram">Voronoi diagram</a>.</p>
         <p>You can click any location in the city to put your pin at the nearest stop. When you hover a location, you will see a red line showing you the fastest route to/from that destination.</p>
 
         <center>
@@ -92,7 +90,7 @@
         <h1>Additional options</h1>
         <p>In the top left corner of the screen you have additional options for the visualization.</p>
         <ol>
-          <li><b>Forward/backward mode</b> - by default see how long it takes to reach any destination from your pin, starting at the time you've picked. But you can also see how long it takes to do the reverse trip, and arrive at your pin <i>before</i> that <table></table>ime.</li>
+          <li><b>Forward/backward mode</b> - by default you see how long it takes to reach any destination from your pin, starting at the time you pick below. With this option you can also see how long it takes to do the reverse trip, and arrive at your pin <i>before</i> that time.</li>
           <li><b>Time</b> - the city looks different during the rush hours! You can also see how missing a rare suburban connection changes the picture.</li>
           <li><b>Threshold</b> - commute times above this value will appear in deep blue. Lower to see more details around your pin, increase to see the wider view.</li>
           <li><b>Diagram opacity</b> - control how much of the city map you can see from behind the visualization.</li>
