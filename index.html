@@ -25,18 +25,21 @@
   .middle {
     display: table-cell;
     vertical-align: middle;
+    text-overflow: scroll;
   }
 
   .inner {
+    overflow-y: scroll;
+    display: block;
     margin-left: auto;
     margin-right: auto; 
-    width: 35%;
+    width: 700px;
     background-color: #fff;
     padding: 5px;
-    border: 1px solid #999;
-    /*text-align: center;*/
+    border: 2px solid #999;
     font-family: 'Roboto','sans-serif';
-    
+    position: relative;
+    top: 10%;
   }
 
   .floating-panel {
@@ -53,6 +56,18 @@
     left: 10px;
   }
 
+  p {
+    text-align: justify;
+    text-justify: inter-word;
+  }
+
+  h1 {
+    text-align: center;
+  }
+
+  li {
+    margin: 10px 0;
+  }
 </style>
 </head>
 <body>
@@ -64,41 +79,47 @@
   <div class="outer" id="intro">
     <div class="middle">
       <div class="inner">
-        <h1>What do I see?</h1>
-        <p>A good transportation system changes how we percieve distance. With a bus or subway getting to a downtown, physically distant location may be faster than walking 2 km in a suburban area. This interactive map lets you explore this phenomenon on the example of <a href="https://en.wikipedia.org/wiki/Warsaw">Warsaw</a>.</p>
-        <h1>How do I see?</h1>
-        <p>Your departure location is marked with a red pin and for each bus, tram or subway stop in the city we calculate the time it takes to reach it from the pin. Each location is colored according to the time it takes to reach the nearest stop. This partitioning is known as the <a href="https://en.wikipedia.org/wiki/Voronoi_diagram">Voronoi diagram</a>. You can click any location in the city to put your pin at the nearest stop. When you hover a location, you will see a red line showing you the fastest route to/from that destination.</p>
-        <h1>Additional options</h1>
-        <p>In the top left corner of the screen you have additional options for the visualization.
-        <ol>
-          <li><b>Time</b> - the city looks different during the rush hours! You can also see how missing a rare suburban connection changes the picture.</li>
-          <li><b>Forward/backward mode</b> - by default see how long it takes to reach any destination from your pin, starting at the time you've picked. But you can also see how long it takes to do the reverse trip, and arrive at your pin <i>before</i> that time.</li>
-          <li><b>Threshold</b> - commute times above this value will appear in deep blue. Lower to see more details around your pin, increase to see the wider view.</li>
-          <li><b>Diagram opacity</b> - control how much of the city map you can see from behind the visualization.</li>
-          <li><b>Show introduction</b> - show this text :)</li>
-        </ol> 
-        </p>
-        <input type="button" id="hideIntroButton" value="Let's go!" onclick="document.getElementById('intro').style.display='none'" />
+        <div style="height: 650">
+          <h1>What do I see?</h1>
+          <p>A good transportation system changes how we percieve distance. Getting to a downtown, physically distant location with a bus or subway may be faster than walking 2 km in a suburban area. This interactive map lets you explore this phenomenon on the example of <a target="_blank" href="https://en.wikipedia.org/wiki/Warsaw">Warsaw</a>.</p>
+          <h1>How do I see?</h1>
+          <p>Your departure location is marked with a red pin and for each bus, tram or subway stop in the city we calculate the time it takes to reach it from the pin. The city is colored according to the time it takes to reach the nearest stop. This partitioning is known as the <a target="_blank" href="https://en.wikipedia.org/wiki/Voronoi_diagram">Voronoi diagram</a>.</p>
+          <p>You can click any location in the city to put your pin at the nearest stop. When you hover a location, you will see a red line showing you the fastest route to/from that destination.</p>
 
+          <center>
+            <input type="button" id="hideIntroButton" value="Let's go!" style="height:50px; width:25%" onclick="document.getElementById('intro').style.display='none'" />
+          </center>
+
+          <h1>Additional options</h1>
+          <p>In the top left corner of the screen you have additional options for the visualization.
+          <ol>
+            <li><b>Forward/backward mode</b> - by default see how long it takes to reach any destination from your pin, starting at the time you've picked. But you can also see how long it takes to do the reverse trip, and arrive at your pin <i>before</i> that <table></table>ime.</li>
+            <li><b>Time</b> - the city looks different during the rush hours! You can also see how missing a rare suburban connection changes the picture.</li>
+            <li><b>Threshold</b> - commute times above this value will appear in deep blue. Lower to see more details around your pin, increase to see the wider view.</li>
+            <li><b>Diagram opacity</b> - control how much of the city map you can see from behind the visualization.</li>
+            <li><b>Show introduction</b> - show this box :)</li>
+          </ol> 
+          </p>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="floating-panel" id="controls">
+    <select id="directionSelect" onchange="changeDirection()">
+      <option value="departure">Depart after:</option>
+      <option value="arrival">Arrive before:</option>
+    </select>
+
     <div class="nested-panel" id="time-panel">
       <input type="button" name="decrementMinute" id="decrementMinute" value="-" onclick="decrementMinute()" />
       <input type="time" name="timeInput" id="timeInput" max="22:00" min="06:00" value="09:00"/>
       <input type="button" name="incrementMinute" id="incrementMinute" value="+" onclick="incrementMinute()" />
     </div>
   
-    <select id="directionSelect" onchange="changeDirection()">
-      <option value="departure">Color by departure</option>
-      <option value="arrival">Color by arrival</option>
-    </select> 
-
     <div class="nested-panel" id="threshold-choice">
-      Threshold: <span id="threshold-span">60</span> minutes<br>
-      <input type="range" name="thresholdSlider" id="thresholdSlider" value="60" min="10" max="150" onchange="setThreshold()">
+      Threshold: <span id="threshold-span">100</span> minutes<br>
+      <input type="range" name="thresholdSlider" id="thresholdSlider" value="100" min="10" max="150" onchange="setThreshold()">
     </div>
     <div class="nested-panel" id="opacity-choice">
       Diagram opacity <span id="opacity-span">60</span>%<br>
@@ -118,7 +139,7 @@
     var currentStop = 5987;
     var ZTMSchedule = null;
     var colorTable = null;
-    var threshold = 60 * 60;
+    var threshold = 100 * 60;
     var forward = true;
     var nodeLocations = null;
     var visualization = null;
@@ -252,10 +273,11 @@
 
         this.polygons.forEach((polygon, i) => {
           const state = dijResults[i];
-          if (state == null || polygon == null) { return; };
+          if (polygon == null) { return; };
+          const color = state != null ? hexIt(state.s) : '#000000';
 
           polygon.setOptions({
-            fillColor: hexIt(state.s)
+            fillColor: color
           });
         });
       }
@@ -291,7 +313,9 @@
       Promise.all([
         makeRequest('GET',
                     'https://jatentaki.github.io/package.sz',
-                    {responseType: 'arraybuffer'}),
+                    {
+                      responseType: 'arraybuffer',
+                    }),
         
         Rust.wasm_client,
       ])
