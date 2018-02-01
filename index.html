@@ -86,19 +86,18 @@
         <p>You can click any location in the city to put your pin at the nearest stop. When you hover a location, you will see a red line showing you the fastest route to/from that destination.</p>
 
         <center>
-          <input type="button" id="hideIntroButton" value="Let's go!" style="height:50px; width:25%" onclick="document.getElementById('intro').style.display='none'" />
+          <input type="button" id="hideIntroButton" value="Let's go!" style="height:50px; width:25%" onclick="document.getElementById('intro').style.visibility='hidden'" />
         </center>
 
         <h1>Additional options</h1>
-        <p>In the top left corner of the screen you have additional options for the visualization.
+        <p>In the top left corner of the screen you have additional options for the visualization.</p>
         <ol>
           <li><b>Forward/backward mode</b> - by default see how long it takes to reach any destination from your pin, starting at the time you've picked. But you can also see how long it takes to do the reverse trip, and arrive at your pin <i>before</i> that <table></table>ime.</li>
           <li><b>Time</b> - the city looks different during the rush hours! You can also see how missing a rare suburban connection changes the picture.</li>
           <li><b>Threshold</b> - commute times above this value will appear in deep blue. Lower to see more details around your pin, increase to see the wider view.</li>
           <li><b>Diagram opacity</b> - control how much of the city map you can see from behind the visualization.</li>
           <li><b>Show introduction</b> - show this box :)</li>
-        </ol> 
-        </p>
+        </ol>
       </div>
     </div>
   </div>
@@ -124,7 +123,7 @@
       <input type="range" name="opacitySlider" id="opacitySlider" value="60" min="0" max="100" onchange="setOpacity()"">
     </div>
 
-    <input type="button" name="showIntroButton" id="showIntroButton" value="Show introduction" onclick="document.getElementById('intro').style.display='block'" />
+    <input type="button" name="showIntroButton" id="showIntroButton" value="Show introduction" onclick="document.getElementById('intro').style.visibility='visible'" />
 
     </div>
   </div>
