@@ -234,7 +234,6 @@
           polygon.addListener('click', ((id, pin) => {
             return () => {
               currentStop = id;
-              console.log('setting currentStop to', id);
               pin.setOptions({
                 position: nodeLocations[id]
               });
@@ -244,7 +243,6 @@
 
           polygon.addListener('mouseover', ((id, vis) => {
             return () => {
-              console.log('hovering over', id);
               if (vis.arrowPath != null) {
                 vis.arrowPath.traceTo(id);
               }
@@ -309,11 +307,9 @@
       });
 
       Promise.all([
-        makeRequest('GET',
-                    'https://jatentaki.github.io/package.sz',
-                    {
-                      responseType: 'arraybuffer',
-                    }),
+        makeRequest(
+          'GET', 'https://jatentaki.github.io/package.sz', {responseType: 'arraybuffer'}
+        ),
         
         Rust.wasm_client,
       ])
@@ -323,9 +319,7 @@
         const pack = new Uint8Array(values[0]);
         const client = values[1];
 
-        console.log('Initializing schedule');
         var voronoi = client.initPackage(pack);
-        console.log('Schedule initialized', voronoi);
 
         ZTMSchedule = client;
 
