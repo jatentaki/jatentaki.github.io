@@ -16,7 +16,7 @@
 title: Michał Tyszkiewicz @ github
 email: michal.tyszkiewicz@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Michał Tyszkiewicz, a polish hacker and DL researcher.
+  Michał Tyszkiewicz, a Polish hacker and DL researcher.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 github_username: jatentaki

@@ -46,7 +46,15 @@ html, body {
     font-family: 'Roboto','sans-serif';
     line-height: 30px;
     padding-left: 10px;
+}
+
+#controls {
     top: 40px;
+    left: 10px;
+}
+
+#github-link {
+    bottom: 40px;
     left: 10px;
 }
 
