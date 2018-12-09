@@ -9,7 +9,7 @@ var threshold = 100 * 60;
 var forward = true;
 var nodeLocations = null;
 var visualization = null;
-const originalMapCenter = {lat: 52.2507055, lng: 21.0250947};
+const originalMapCenter = {lat: 52.2209488, lng: 21.0082979};
 
 class ArrowPath {
   constructor(map, dijResults) {
@@ -170,12 +170,12 @@ class Visualization {
 
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 12,
+    zoom: 12.75,
     center: originalMapCenter,
     mapTypeId: 'terrain'
   });
 
-  const schedule_url = 'https://raw.githubusercontent.com/jatentaki/jatentaki.github.io/master/serialized'
+  const schedule_url = 'https://jatentaki.github.io/ztm/serialized'
   Promise.all([
     makeRequest('GET', schedule_url,  {responseType: 'arraybuffer'}),
     Rust.wasm_client,
