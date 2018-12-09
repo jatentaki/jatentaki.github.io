@@ -2,7 +2,7 @@
 
 var map = null;
 var circles = null;
-var currentStop = 5987;
+var currentStop = 3314;
 var ZTMSchedule = null;
 var colorTable = null;
 var threshold = 100 * 60;
@@ -92,8 +92,8 @@ class Visualization {
           paths: paths,
           strokeColor: Visualization.defaultStrokeColor(),
           fillColor: Visualization.defaultFillColor(),
-          fillOpacity: 0.60,
-          strokeOpacity: 0.5,
+          fillOpacity: 0.30,
+          strokeOpacity: 0.25,
           strokeWeight: 0.2
       });
 
@@ -113,7 +113,7 @@ class Visualization {
         return () => {
           if (vis.arrowPath != null) {
             vis.arrowPath.traceTo(id);
-          }
+          };
         };
       })(i, this));
 
@@ -141,7 +141,8 @@ class Visualization {
       const color = state != null ? hexIt(state.s) : '#000000';
 
       polygon.setOptions({
-        fillColor: color
+        fillColor: color,
+        time: state != null ? state.s : null,
       });
     });
   }
@@ -174,11 +175,9 @@ function initMap() {
     mapTypeId: 'terrain'
   });
 
+  const schedule_url = 'https://raw.githubusercontent.com/jatentaki/jatentaki.github.io/master/serialized'
   Promise.all([
-    makeRequest(
-      'GET', 'https://jatentaki.github.io/package.sz', {responseType: 'arraybuffer'}
-    ),
-    
+    makeRequest('GET', schedule_url,  {responseType: 'arraybuffer'}),
     Rust.wasm_client,
   ])
   .then(values => {
@@ -197,6 +196,8 @@ function initMap() {
     nodeLocations = ZTMSchedule.getNodes();
     visualization = new Visualization(map, voronoi);
     loadDijkstra(visualization);
+    setThreshold();
+    setOpacity();
   });
 }
 
@@ -303,4 +304,3 @@ function getTime() {
     minute: parseInt(splits[1])
   };
 }
-
