@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <meta charset="utf-8">
+  <title>Public transport in Warsaw - visualized</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+  <script src="https://www.w3schools.com/lib/w3color.js"></script>
+  <script src="wasm_client.js"></script>
+
+  <div class="outer" id="intro">
+    <div class="middle">
+      <div class="inner">
+        <h1>What do I see?</h1>
+        <p>Transportation changes how we percieve distance - what matters in the end is not the physical distance but the time it takes to get somewhere. This interactive map lets you explore this phenomenon on the example of <a target="_blank" href="https://en.wikipedia.org/wiki/Warsaw">Warsaw</a>.</p>
+        <h1>How do I see?</h1>
+        <p>Your departure location is marked with a red pin and for each bus, tram or subway station in the city we calculate the time it takes to reach it from the pin. The city is divided into colorful tiles. Each stop corresponds to a signle tile - the area for which it is the closest stop. This partitioning is known as a <a target="_blank" href="https://en.wikipedia.org/wiki/Voronoi_diagram">Voronoi diagram</a>. The tiles are colored according to the time it takes to reach it from your starting location (red pin).</p>
+        <p>You can click any location in the city to put your pin at the nearest stop. When you hover a location, you will see a red line showing you the fastest route to/from that destination. Right now the pin is at one of city's subway stations. Can you see where are the others?</p>
+
+        <center>
+          <input type="button" id="hideIntroButton" value="Let's go!" style="height:50px; width:25%" onclick="document.getElementById('intro').style.visibility='hidden'" />
+        </center>
+
+        <h1>Additional options</h1>
+        <p>In the top left corner of the screen you have additional options for the visualization.</p>
+        <ol>
+          <li><b>Forward/backward mode</b> - by default you see how long it takes to reach any destination from your pin, starting at the time you pick below. With this option you can also see how long it takes to do the reverse trip, and arrive at your pin <i>before</i> that time.</li>
+          <li><b>Time</b> - the city looks different during the rush hours! You can also see how missing a rare suburban connection changes the picture.</li>
+          <li><b>Threshold</b> - commute times above this value will appear in deep blue. Lower to see more details around your pin, increase to see the wider view.</li>
+          <li><b>Diagram opacity</b> - control how much of the city map you can see from behind the visualization.</li>
+          <li><b>Show introduction</b> - show this box :)</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <div class="floating-panel" id="controls">
+    <select id="directionSelect" onchange="changeDirection()">
+      <option value="departure">Depart after:</option>
+      <option value="arrival">Arrive before:</option>
+    </select>
+
+    <div class="nested-panel" id="time-panel">
+      <input type="button" name="decrementMinute" id="decrementMinute" value="-" onclick="decrementMinute()" />
+      <input type="time" name="timeInput" id="timeInput" max="22:00" min="06:00" value="09:00"/>
+      <input type="button" name="incrementMinute" id="incrementMinute" value="+" onclick="incrementMinute()" />
+    </div>
+  
+    <div class="nested-panel" id="threshold-choice">
+      Threshold: <span id="threshold-span">30</span> minutes<br>
+      <input type="range" name="thresholdSlider" id="thresholdSlider" value="30" min="10" max="150" onchange="setThreshold()">
+    </div>
+    <div class="nested-panel" id="opacity-choice">
+      Diagram opacity <span id="opacity-span">30</span>%<br>
+      <input type="range" name="opacitySlider" id="opacitySlider" value="50" min="0" max="100" onchange="setOpacity()"">
+    </div>
+
+    <input type="button" name="showIntroButton" id="showIntroButton" value="Show introduction" onclick="document.getElementById('intro').style.visibility='visible'" />
+
+    </div>
+  </div>
+  <div id="map"></div>
+  <script src="scripts.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDwg8-aUcFQxquhk0KCmJnETUxo5MJSiJ4&callback=initMap"></script>
+    </body>
+    </html>
