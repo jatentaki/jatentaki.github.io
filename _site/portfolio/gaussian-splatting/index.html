@@ -277,9 +277,15 @@
       
 
       <section class="page__content" itemprop="text">
-        <p><a href="/assets/gaussianviewer/index.html">Here</a> is a website which allows client-side interactive rendering of NeRFs created with <a href="https://github.com/graphdeco-inria/gaussian-splatting">Gaussian splatting</a>. It utilizes the <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API">WebGPU</a> API which is not yet supported in all browers - at time of writing you need a recent version of desktop Chrome/Edge or Firefox Nightly. See the full compatibility table <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API#browser_compatibility">here</a>.</p>
+        <p><a href="/assets/gaussianviewer/index.html">Here</a> is a website which allows client-side interactive rendering of NeRFs created with <a href="https://github.com/graphdeco-inria/gaussian-splatting">Gaussian splatting</a>. The source code is available <a href="https://github.com/cvlab-epfl/gaussian-splatting-web">here</a>.</p>
+
+<p><img src="/images/gaussiansplatting-teaser.png" alt="Teaser" /></p>
 
 <h2 id="usage">Usage</h2>
+<blockquote>
+  <p>This code uses the <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API">WebGPU</a> API which is not yet supported in all browers - at the time of writing you need a recent version of desktop Chrome/Edge or Firefox Nightly. See the full compatibility table <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API#browser_compatibility">here</a>.</p>
+</blockquote>
+
 <p>Training a NeRF with the original Gaussian Splatting (GS) code creates a number of files. Of importance are two: the point cloud in <code class="language-plaintext highlighter-rouge">.ply</code> format and camera metadata in <code class="language-plaintext highlighter-rouge">.json</code> format. Example files are available <a href="https://drive.google.com/drive/folders/1tGsWJwoIi20T9TqPYBk7kJh1jPfh8lQE?usp=drive_link">from my Google Drive</a> or from the <a href="https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/datasets/pretrained/models.zip">authors of the original paper</a>.</p>
 
 <ol>
