@@ -19,7 +19,7 @@
 
 
 
-<title>Portfolio item number 1 - Michał Tyszkiewicz</title>
+<title>Web viewer for Gaussian splatting NeRFs - Michał Tyszkiewicz</title>
 
 
 
@@ -29,22 +29,22 @@
 
 <meta property="og:locale" content="en-US">
 <meta property="og:site_name" content="Michał Tyszkiewicz">
-<meta property="og:title" content="Portfolio item number 1">
+<meta property="og:title" content="Web viewer for Gaussian splatting NeRFs">
 
 
-  <link rel="canonical" href="http://localhost:4000/portfolio/portfolio-1/">
-  <meta property="og:url" content="http://localhost:4000/portfolio/portfolio-1/">
+  <link rel="canonical" href="http://localhost:4000/portfolio/gaussian-splatting/">
+  <meta property="og:url" content="http://localhost:4000/portfolio/gaussian-splatting/">
 
 
 
-  <meta property="og:description" content="Short description of portfolio item number 1">
+  <meta property="og:description" content="An interactive renderer for Gaussian splatting NeRFs written in WebGPU.">
 
 
 
   <meta name="twitter:site" content="@jatentaki">
-  <meta name="twitter:title" content="Portfolio item number 1">
-  <meta name="twitter:description" content="Short description of portfolio item number 1">
-  <meta name="twitter:url" content="http://localhost:4000/portfolio/portfolio-1/">
+  <meta name="twitter:title" content="Web viewer for Gaussian splatting NeRFs">
+  <meta name="twitter:description" content="An interactive renderer for Gaussian splatting NeRFs written in WebGPU.">
+  <meta name="twitter:url" content="http://localhost:4000/portfolio/gaussian-splatting/">
 
   
     <meta name="twitter:card" content="summary">
@@ -255,15 +255,15 @@
 
 
   <article class="page" itemscope itemtype="http://schema.org/CreativeWork">
-    <meta itemprop="headline" content="Portfolio item number 1">
-    <meta itemprop="description" content="Short description of portfolio item number 1">
+    <meta itemprop="headline" content="Web viewer for Gaussian splatting NeRFs">
+    <meta itemprop="description" content="An interactive renderer for Gaussian splatting NeRFs written in WebGPU.">
     
     
 
     <div class="page__inner-wrap">
       
         <header>
-          <h1 class="page__title" itemprop="headline">Portfolio item number 1
+          <h1 class="page__title" itemprop="headline">Web viewer for Gaussian splatting NeRFs
 </h1>
           
         
@@ -277,7 +277,35 @@
       
 
       <section class="page__content" itemprop="text">
-        <p>This is an item in your portfolio. It can be have images or nice text. If you name the file .md, it will be parsed as markdown. If you name the file .html, it will be parsed as HTML.</p>
+        <p><a href="/assets/gaussianviewer/index.html">Here</a> is a website which allows client-side interactive rendering of NeRFs created with <a href="https://github.com/graphdeco-inria/gaussian-splatting">Gaussian splatting</a>. It utilizes the <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API">WebGPU</a> API which is not yet supported in all browers - at time of writing you need a recent version of desktop Chrome/Edge or Firefox Nightly. See the full compatibility table <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API#browser_compatibility">here</a>.</p>
+
+<h2 id="usage">Usage</h2>
+<p>Training a NeRF with the original Gaussian Splatting (GS) code creates a number of files. Of importance are two: the point cloud in <code class="language-plaintext highlighter-rouge">.ply</code> format and camera metadata in <code class="language-plaintext highlighter-rouge">.json</code> format. Example files are available <a href="https://drive.google.com/drive/folders/1tGsWJwoIi20T9TqPYBk7kJh1jPfh8lQE?usp=drive_link">from my Google Drive</a> or from the <a href="https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/datasets/pretrained/models.zip">authors of the original paper</a>.</p>
+
+<ol>
+  <li>Pick the <code class="language-plaintext highlighter-rouge">.ply</code> via the button in top-right.</li>
+  <li>(Optional) Pick the corresponding <code class="language-plaintext highlighter-rouge">cameras.json</code> file with the other button. This is not necessary but the default camera location may be far from any sensible viewpoint.</li>
+</ol>
+
+<p>The camera can be controlled in two ways: by picking a predefined camera from the list (requires loading <code class="language-plaintext highlighter-rouge">cameras.json</code>) or with interactive controls - W/S to move up/down image plane, A/D to move left/right, mouse wheel to move perpendicular. Mouse click+drag to rotate the camera (pitch/yaw).</p>
+
+<h2 id="background-and-design">Background and design</h2>
+<p>This project was born out of my desire to try how far can I get in a new territory (webdev, 3d graphics, typescript, WebGPU) with the help of ChatGPT. Turns out quite far, but ChatGPT’s role was more of a tutor helping with the APIs, than as a programmer writing the code for me. I initially tried to directly translate the original code to WebGPU compute shaders (hence the choice of WebGPU over WebGL) which worked but was painfully slow without efficient GPU depth sort and pruning. Since writing such a sort algorithm seemed difficult I instead changed the paradigm to express the original algorithm in terms of standard rasterization primitives. In short, the Gaussians are depth-sorted on CPU and then drawn in front-to-back order as flat quads (rectangles composed of two triangles), with the vertex shader responsible for painting the 2d Gaussian on each. With some abuse of the blending options it’s possible to recreate the usual alpha-dependant color accumulation rule of NeRFs with raster graphics.</p>
+
+<h2 id="known-issues">Known issues</h2>
+<p>My lack of experience and limited time means a number of bugs and to-dos. I am happy to take PRs with fixes and missing functionality.</p>
+
+<ul>
+  <li><strong>Low FPS</strong>. There are two particularly slow steps in the code. My informal benchmarking suggests that 1. is a much bigger factor than 2.
+    <ol>
+      <li>Sorting the Gaussians by depth on CPU, for each rendered frame. This can be fixed by implementing a GPU sort as a compute shader and outputting the order to an index buffer. The calls to <a href="https://developer.mozilla.org/en-US/docs/Web/API/GPURenderPassEncoder/draw"><code class="language-plaintext highlighter-rouge">draw</code></a> can then be replaced with <a href="https://developer.mozilla.org/en-US/docs/Web/API/GPURenderPassEncoder/drawIndexed"><code class="language-plaintext highlighter-rouge">drawIndexed</code></a>. To avoid CPU-&gt;GPU roundtrips</li>
+      <li>Rendering the Gaussians individually (-&gt; #draw calls = #gaussians). This seems unavoidable without loss of quality but tradeoffs may be possible. One choice is to replace <code class="language-plaintext highlighter-rouge">draw</code> with <code class="language-plaintext highlighter-rouge">drawIndexed</code> (as above, regardless where the index buffer is computed) and draw the quads in groups of N, instead of one-by-one.</li>
+    </ol>
+  </li>
+  <li><strong>Error converting 3rd degree spherical harmonics to color</strong>. There is an issue converting 3rd degree spherical harmonics to RGB, resulting in strongly negative values. Preliminary debugging suggests this may be an issue with memory layout or WebGPU implementation in Chrome, as the code tested in separation works as intended.</li>
+  <li><strong>Drifting orbit controls</strong>. The orbit controls for interactive naviation are not very well thought-out and may cause drift over time, in particular of the “upwards” direction. The easy workaround is to just reset to a predefined camera from <code class="language-plaintext highlighter-rouge">cameras.json</code>.</li>
+  <li><strong>Possibly lacking error handling</strong>. With my poor TypeScript background I have likely missed multiple conditions where exceptions may be thrown, resulting in quiet entries in the javascript console rather than clear pop-ups for the user.</li>
+</ul>
 
         
       </section>
@@ -298,25 +326,15 @@
     <h4 class="page__share-title">Share on</h4>
   
 
-  <a href="https://twitter.com/intent/tweet?text=http://localhost:4000/portfolio/portfolio-1/" class="btn btn--twitter" title="Share on Twitter"><i class="fab fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+  <a href="https://twitter.com/intent/tweet?text=http://localhost:4000/portfolio/gaussian-splatting/" class="btn btn--twitter" title="Share on Twitter"><i class="fab fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
 
-  <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/portfolio/portfolio-1/" class="btn btn--facebook" title="Share on Facebook"><i class="fab fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+  <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/portfolio/gaussian-splatting/" class="btn btn--facebook" title="Share on Facebook"><i class="fab fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
 
-  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://localhost:4000/portfolio/portfolio-1/" class="btn btn--linkedin" title="Share on LinkedIn"><i class="fab fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://localhost:4000/portfolio/gaussian-splatting/" class="btn btn--linkedin" title="Share on LinkedIn"><i class="fab fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
 </section>
 
       
 
-
-  <nav class="pagination">
-    
-      <a href="#" class="pagination--pager disabled">Previous</a>
-    
-    
-      <a href="http://localhost:4000/portfolio/portfolio-2/" class="pagination--pager" title="Portfolio item number 2
-">Next</a>
-    
-  </nav>
 
     </div>
 
