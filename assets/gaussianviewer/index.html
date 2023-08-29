@@ -56,6 +56,17 @@
             text-align: left;
         }
 
+        /* reduce margins on the instructions list */
+        #instructions p {
+            margin-bottom: 0.2em;
+        }
+
+        /* reduce margins on the instructions list */
+        #instructions ul, #instructions ol, #instructions li {
+            margin-top: 0.1em;
+            margin-left: -0.5em;
+        }
+
         #cameraList li {
             margin-bottom: 5px;
         }
@@ -73,4 +84,4 @@
             padding: 10px;
             border-radius: 5px;
             display: none; /* Hide it initially */
-        }</style><script defer="defer" src="main.js"></script></head><body><div id="loading-popup">Loading .ply, this may take from seconds to a couple of minutes</div><div id="container"><div id="drawArea"><canvas id="canvas-webgpu" width="700" height="700"></canvas></div><div id="sidebar"><div id="controls"><button style="display:block" onclick="document.getElementById('plyButton').click()">Choose point_cloud.ply</button> <input type="file" accept=".ply" style="display:none" id="plyButton"/> <button style="display:block" onclick="document.getElementById('cameraButton').click()">Choose cameras.json</button> <input type="file" accept=".json" style="display:none" id="cameraButton"/> <label for="cameraList">Available cameras:</label><ul id="cameraList"><li>(choose cameras.json to load)</li></ul></div><div id="instructions"><p><strong>Usage:</strong></p><ol><li><strong>Pick a point cloud</strong> (by default called point_cloud.ply, not input.ply).</li><li>(Optional) <strong>Select a cameras.json file</strong>, to pick predefined cameras from the list.</li></ol><p><strong>Moving:</strong></p><ul><li><strong>W/S</strong> up/down image plane</li><li><strong>A/D</strong> left/right</li><li><strong>Q/E</strong> forward/backward</li></ul><p><strong>Rotating:</strong></p><ul><li><strong>J/L</strong> yaw</li><li><strong>I/K</strong> pitch</li><li><strong>U/O</strong> roll</li></ul></div><a href="https://drive.google.com/drive/folders/1tGsWJwoIi20T9TqPYBk7kJh1jPfh8lQE?usp=sharing">Sample scenes</a><br><a href="https://github.com/cvlab-epfl/gaussian-splatting-web">Source</a></div></div></body></html>
+        }</style><script defer="defer" src="main.js"></script></head><body><div id="loading-popup">Loading .ply, this may take from seconds to a couple of minutes</div><div id="container"><div id="drawArea"><canvas id="canvas-webgpu" width="700" height="700"></canvas></div><div id="sidebar"><label id="fps-counter" style="display:none"></label><div id="controls"><button style="display:block" onclick="document.getElementById('plyButton').click()">Choose point_cloud.ply</button> <input type="file" accept=".ply" style="display:none" id="plyButton"/> <button style="display:block" onclick="document.getElementById('cameraButton').click()">Choose cameras.json</button> <input type="file" accept=".json" style="display:none" id="cameraButton"/> <label for="cameraList">Available cameras:</label><ul id="cameraList"><li>(choose cameras.json to load)</li></ul></div><div id="instructions"><p><strong>Usage:</strong></p><ol><li><strong>Pick a point cloud</strong> (by default called point_cloud.ply, not input.ply).</li><li>(Optional) <strong>Select a cameras.json file</strong>, to pick predefined cameras from the list.</li></ol><p><strong>Mouse controls:</strong></p><ul><li><strong>Click + drag</strong> rotate yaw/pitch</li><li><strong>Scroll wheel</strong> move forward/backward</li></ul><p><strong>Keyboard controls:</strong></p><ul><li><strong>W/S</strong> move up/down image plane</li><li><strong>A/D</strong> move left/right</li><li><strong>Q/E</strong> move forward/backward</li><li><strong>J/L</strong> rotate yaw</li><li><strong>I/K</strong> rotate pitch</li><li><strong>U/O</strong> rotate roll</li></ul></div><a href="https://drive.google.com/drive/folders/1tGsWJwoIi20T9TqPYBk7kJh1jPfh8lQE?usp=sharing">Sample scenes</a><br><a href="https://github.com/cvlab-epfl/gaussian-splatting-web">Source</a></div></div></body></html>
