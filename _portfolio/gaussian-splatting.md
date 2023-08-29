@@ -8,7 +8,7 @@ collection: portfolio
 
 [Here](/assets/gaussianviewer/index.html) is a website which allows client-side interactive rendering of NeRFs created with [Gaussian splatting](https://github.com/graphdeco-inria/gaussian-splatting). The source code is available [here](https://github.com/cvlab-epfl/gaussian-splatting-web).
 
-<p style='text-align:center'><a href=/assets/gaussianviewer/index.html><img src='/images/gaussiansplatting-teaser.png' height='300' width='300'></a></p>
+<p style='text-align:center'><a href='/assets/gaussianviewer/index.html'><img src='/images/gaussiansplatting-teaser.png' height='300' width='300'></a></p>
 
 ## Usage
 > This code uses the [WebGPU](https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API) API which is not yet widely supported. MacOS + Chrome should work out of the box, for Ubuntu see instructions in [compatibility](#compatibility), Windows may not work at all.
