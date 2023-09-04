@@ -9,7 +9,7 @@ collection: portfolio
 <p style='text-align:center'><a href='/assets/gaussianviewer/index.html'><img src='/images/gaussiansplatting-teaser.png' height='300' width='300'></a></p>
 
 ## Usage
-> This code uses the [WebGPU](https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API) API which is not yet widely supported. MacOS + Chrome should work out of the box, for Ubuntu see instructions in [compatibility](#compatibility), Windows may not work at all.
+> This code uses the [WebGPU](https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API) API which is not yet widely supported. You will need a recent version of Chromium-based browser, see [compatibility](#compatibility) for details.
 
 Training a NeRF with the original Gaussian Splatting (GS) code creates a number of files. Of importance are two: the point cloud in `.ply` format and camera metadata in `.json` format. Example files are available [from my Google Drive](https://drive.google.com/drive/folders/1tGsWJwoIi20T9TqPYBk7kJh1jPfh8lQE?usp=drive_link) or from the [authors of the original paper](https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/datasets/pretrained/models.zip).
 
