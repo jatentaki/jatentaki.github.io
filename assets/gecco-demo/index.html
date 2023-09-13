@@ -4,10 +4,32 @@
             background: #fff;
         }
 
-        #container {
+        #viewport {
             display: flex;
+            width: 100%;
+            align-items: start;
+        }
+
+        #previous, #next {
+            width: 15%; /* Set to whatever width you need */
+            background-color: #ccc; /* Just for visual aid, remove or replace this */
+            display: flex;
+
+            writing-mode: vertical-lr;
+            align-items: center;
+            justify-content: center;
+            align-self: stretch;
+            font-size: 2.5em;
+        }
+
+        #previous {
+            transform: scale(-1, -1);
+        }
+
+        #viewer-table{
+            display: flex;
+            flex: 1;
             flex-direction: column;
-            justify-content: space-around;
             align-items: center;
         }
 
@@ -54,4 +76,4 @@
             transform: scale(-1, -1);
             width: 50px;
             text-align: center;
-        }</style><script defer="defer" src="main.js"></script></head><body><div id="container"><div id="table-headers"><div class="title frame-width"></div><div class="header frame-width">Image</div><div class="header frame-width">Ground truth</div><div class="header frame-width">GECCO</div><div class="header frame-width">VisualPriors</div></div></div></body></html>
+        }</style><script defer="defer" src="main.js"></script></head><body><div id="viewport"><div id="previous">Previous</div><div id="viewer-table"><div id="table-headers"><div class="title frame-width"></div><div class="header frame-width">Image</div><div class="header frame-width">Ground truth</div><div class="header frame-width">GECCO</div><div class="header frame-width">Scaled mono depth</div></div></div><div id="next">Next</div></div></body></html>
