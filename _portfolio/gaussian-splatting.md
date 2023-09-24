@@ -1,14 +1,14 @@
 ---
 title: "Web viewer for Gaussian splatting NeRFs"
-excerpt: "<img src='/images/gaussiansplatting-teaser.png' height='200' width='200'><br/>An interactive renderer for Gaussian splatting NeRFs written in WebGPU."
+excerpt: "An interactive renderer for Gaussian splatting NeRFs written in WebGPU."
 collection: portfolio
 header:
-    image: gaussiansplatting-teaser.png
+    overlay_image: gaussiansplatting-teaser.png
 ---
 
-[Here](/assets/gaussianviewer/index.html) is a website which allows client-side interactive rendering of NeRFs created with [Gaussian splatting](https://github.com/graphdeco-inria/gaussian-splatting). The source code is available [here](https://github.com/cvlab-epfl/gaussian-splatting-web).
+<p style='text-align: center; text-transform: uppercase; font-size: 40px;'><a style='text-decoration: none;' href='/assets/gaussianviewer/index.html'>Link to the renderer</a></p>
 
-<p style='text-align:center'><a href='/assets/gaussianviewer/index.html'><img src='/images/gaussiansplatting-teaser.png' height='300' width='300'></a></p>
+I'm happy to present a <a href='/assets/gaussianviewer/index.html'>website</a> which allows client-side interactive rendering of NeRFs created with [Gaussian splatting](https://github.com/graphdeco-inria/gaussian-splatting). The source code is available [here](https://github.com/cvlab-epfl/gaussian-splatting-web).
 
 ## Usage
 > This code uses the [WebGPU](https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API) API which is not yet widely supported. You will need a recent version of Chromium-based browser, see [compatibility](#compatibility) for details.
