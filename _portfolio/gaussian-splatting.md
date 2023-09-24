@@ -2,6 +2,8 @@
 title: "Web viewer for Gaussian splatting NeRFs"
 excerpt: "<img src='/images/gaussiansplatting-teaser.png' height='200' width='200'><br/>An interactive renderer for Gaussian splatting NeRFs written in WebGPU."
 collection: portfolio
+header:
+    image: gaussiansplatting-teaser.png
 ---
 
 [Here](/assets/gaussianviewer/index.html) is a website which allows client-side interactive rendering of NeRFs created with [Gaussian splatting](https://github.com/graphdeco-inria/gaussian-splatting). The source code is available [here](https://github.com/cvlab-epfl/gaussian-splatting-web).
