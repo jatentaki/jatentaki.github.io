@@ -11,7 +11,7 @@ header:
 I'm happy to present a <a href='/assets/gaussianviewer/index.html'>website</a> which allows client-side interactive rendering of NeRFs created with [Gaussian splatting](https://github.com/graphdeco-inria/gaussian-splatting). The source code is available [here](https://github.com/cvlab-epfl/gaussian-splatting-web).
 
 ## Usage
-> This code uses the [WebGPU](https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API) API which is not yet widely supported. You will need a recent version of Chromium-based browser, see [compatibility](#compatibility) for details.
+> This code uses the [WebGPU](https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API) API which is not yet widely supported. You will need a recent version of Chrome (or other Chromium-based browser), see [compatibility](#compatibility) for details.
 
 Training a NeRF with the original Gaussian Splatting (GS) code creates a number of files. Of importance are two: the point cloud in `.ply` format and camera metadata in `.json` format. Example files are available [from my Google Drive](https://drive.google.com/drive/folders/1tGsWJwoIi20T9TqPYBk7kJh1jPfh8lQE?usp=drive_link) or from the [authors of the original paper](https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/datasets/pretrained/models.zip).
 
